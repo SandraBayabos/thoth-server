@@ -29,7 +29,15 @@ router.post("/signup", async (req, res) => {
 
     const token = jwtGenerator(newUser.rows[0].id);
 
-    res.status(201).json({ token: token, user: newUser.rows });
+    const userData = user.rows[0];
+
+    const data = {
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+    };
+
+    res.status(201).json({ token: token, user: data });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
@@ -40,7 +48,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await pool.query("SELECT * FROM users WHERE email = $1 ", [
+    const user = await pool.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
 
@@ -56,7 +64,15 @@ router.post("/login", async (req, res) => {
 
     const token = jwtGenerator(user.rows[0].id);
 
-    res.json({ token: token, user: user.rows });
+    const userData = user.rows[0];
+
+    const data = {
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+    };
+
+    res.json({ token: token, user: data });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
