@@ -29,16 +29,18 @@ router.post("/signup", async (req, res) => {
 
     const token = jwtGenerator(newUser.rows[0].id);
 
-    const userData = user.rows[0];
+    const userData = newUser.rows[0];
 
     const data = {
       id: userData.id,
       username: userData.username,
       email: userData.email,
     };
+    console.log(data);
 
     res.status(201).json({ token: token, user: data });
   } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });
