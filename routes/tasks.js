@@ -18,7 +18,7 @@ router.post("/create", async (req, res) => {
         [name, user_id, due_date]
       );
 
-      const taskData = newTask.rows[0]
+      const taskData = newTask.rows[0];
 
       const data = {
         id: taskData.id,
@@ -29,7 +29,7 @@ router.post("/create", async (req, res) => {
       res.status(201).json({ task: data });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -37,10 +37,19 @@ router.post("/create", async (req, res) => {
 module.exports = router;
 
 // get all tasks belonging to user
-// router.get("/", async (req, res) => {
-//   try {
+router.get("/", async (req, res) => {
+  try {
+    const { user_id } = req.body;
 
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
+    const allTasks = await pool.query(
+      "SELECT * FROM tasks WHERE user_id = $1",
+      [user_id]
+    );
+
+    const data = allTasks.rows;
+
+    res.status(200).json({ data: data });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});

@@ -13,5 +13,6 @@ CREATE TABLE tasks(
     name VARCHAR(255) NOT NULL,
     user_id uuid NOT NULL,
     due_date date NOT NULL,
+    completed boolean NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
