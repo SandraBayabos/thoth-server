@@ -3,19 +3,22 @@ require("dotenv").config();
 
 module.exports = async (req, res, next) => {
   try {
-    const jwtToken = req.header("token");
+    const bearerHeader = req.headers["authorization"];
 
-    if (!jwtToken) {
-      return res.status(403).json("Not Authorized");
+    if (typeof bearerHeader !== "undefined") {
+      const bearer = bearerHeader.split(" ");
+      const bearerToken = bearer[1];
+      req.token = bearerToken;
+
+      if (!bearerToken) {
+        return res.status(403).json("Not Authorized");
+      } else {
+        const payload = jwt.verify(bearerToken, process.env.JWTSECRET);
+        req.user = payload.user;
+        next();
+      }
     }
-
-    const payload = jwt.verify(jwtToken, process.env.JWTSECRET);
-
-    req.user = payload.user;
-
-    next();
   } catch (error) {
-    console.log(error.message);
     return res.status(403).json("Not Authorized");
   }
 };
