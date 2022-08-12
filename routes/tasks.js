@@ -4,7 +4,7 @@ const authorization = require("../middleware/authorization");
 const { route } = require("./jwtAuth");
 
 // create task
-router.post("/create", async (req, res) => {
+router.post("/create", authorization, async (req, res) => {
   try {
     const { name, user_id, due_date } = req.body;
 
@@ -48,6 +48,34 @@ router.get("/", authorization, async (req, res) => {
 
     res.status(200).json({ data: data });
   } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// update status of task
+router.put("/update/:id", authorization, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { completed } = req.body;
+
+    const task = await pool.query("SELECT * FROM tasks WHERE id = $1", [id]);
+
+    if (task.rows[0]) {
+      const updatedTask = await pool.query(
+        "UPDATE tasks SET completed = $1 WHERE id = $2",
+        [completed, id]
+      );
+
+      const data = {
+        id: id,
+        completed: completed,
+        name: task.rows[0].name,
+      };
+
+      res.status(200).json({ message: "Successfully updated", data: data });
+    }
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
