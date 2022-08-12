@@ -7,3 +7,11 @@ CREATE TABLE users(
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE tasks(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    user_id uuid NOT NULL,
+    due_date date NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
+);
