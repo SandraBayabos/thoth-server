@@ -34,10 +34,8 @@ router.post("/create", async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // get all tasks belonging to user
-router.get("/", async (req, res) => {
+router.get("/", authorization, async (req, res) => {
   try {
     const { user_id } = req.body;
 
@@ -53,3 +51,5 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+module.exports = router;
