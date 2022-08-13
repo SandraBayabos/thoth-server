@@ -83,10 +83,10 @@ router.post("/login", async (req, res) => {
 // auto login
 router.get("/auto_login", authorization, async (req, res) => {
   try {
-    res.json(true);
-    console.log('called')
+    const user = req.user;
+    res.json({ user: user });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });

@@ -6,7 +6,7 @@ const { route } = require("./jwtAuth");
 // create task
 router.post("/create", authorization, async (req, res) => {
   try {
-    const { name, user_id, due_date } = req.body;
+    const { name, user_id, due_date, tags } = req.body;
 
     const user = await pool.query("SELECT * FROM users WHERE id = $1", [
       user_id,
@@ -19,6 +19,25 @@ router.post("/create", authorization, async (req, res) => {
       );
 
       const taskData = newTask.rows[0];
+
+      // tags = [tag1, tag2]
+
+      tags.forEach((tag) => {
+        // insert tag.name into tags table
+        const newTags = pool
+          // insert tag_id and task_id into task_tag table
+          .query("INSERT INTO tags (name) VALUES ($1) RETURNING *", [tag])
+          .then((response) =>
+            response.rows.forEach((taskTag) => {
+              const newTaskTag = pool
+                .query(
+                  "INSERT INTO task_tags (task_id, tag_id) VALUES ($1, $2) RETURNING *",
+                  [taskData.id, taskTag.id]
+                )
+                .then((response) => console.log(response));
+            })
+          );
+      });
 
       const data = {
         id: taskData.id,
