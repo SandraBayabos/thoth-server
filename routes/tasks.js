@@ -6,7 +6,9 @@ const { route } = require("./jwtAuth");
 // create task
 router.post("/create", authorization, async (req, res) => {
   try {
-    const { name, user_id, due_date, tags } = req.body;
+    const { name, due_date, tags } = req.body;
+
+    const user_id = req.user;
 
     const user = await pool.query("SELECT * FROM users WHERE id = $1", [
       user_id,
@@ -42,7 +44,7 @@ router.post("/create", authorization, async (req, res) => {
       const data = {
         id: taskData.id,
         name: taskData.name,
-        dueDate: taskData.due_date,
+        due_date: taskData.due_date,
       };
 
       res.status(201).json({ task: data });
@@ -59,7 +61,7 @@ router.get("/", authorization, async (req, res) => {
     const user_id = req.user;
 
     const allTasks = await pool.query(
-      "SELECT * FROM tasks WHERE user_id = $1",
+      "SELECT * FROM tasks WHERE user_id = $1 ORDER BY id DESC",
       [user_id]
     );
     console.log(allTasks);
