@@ -56,16 +56,18 @@ router.post("/create", authorization, async (req, res) => {
 // get all tasks belonging to user
 router.get("/", authorization, async (req, res) => {
   try {
-    const { user_id } = req.body;
+    const user_id = req.user;
 
     const allTasks = await pool.query(
       "SELECT * FROM tasks WHERE user_id = $1",
       [user_id]
     );
+    console.log(allTasks);
 
     const data = allTasks.rows;
 
     res.status(200).json({ data: data });
+    console.log(data);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
