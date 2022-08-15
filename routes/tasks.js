@@ -65,28 +65,9 @@ router.get("/", authorization, async (req, res) => {
       [user_id]
     );
 
-    // const allTasks = await pool.query(
-    //   "SELECT * FROM tasks WHERE user_id = $1 ORDER BY id DESC",
-    //   [user_id]
-    // );
-
-    // const arr = [];
-    // allTasks.rows.forEach((task) => {
-    //   pool
-    //     .query(
-    //       "SELECT * FROM task_tags INNER JOIN tasks ON task_tags.task_id=$1 INNER JOIN tags on task_tags.tag_id=tags.id",
-    //       [task.id]
-    //     )
-    //     .then((response) => {
-    //       console.log({ response });
-    //     });
-    // });
-
     const data = allTasks.rows;
-    // console.log({ tags });
 
     res.status(200).json({ data: data });
-    // console.log(data);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
