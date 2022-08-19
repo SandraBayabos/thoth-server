@@ -26,25 +26,30 @@ router.post("/create", authorization, async (req, res) => {
 
       tags.forEach((tag) => {
         // insert tag.name into tags table
-        const newTags = pool
-          // insert tag_id and task_id into task_tag table
+        // insert tag_id and task_id into task_tag table
+        pool
           .query("INSERT INTO tags (name) VALUES ($1) RETURNING *", [tag])
           .then((response) =>
             response.rows.forEach((taskTag) => {
-              const newTaskTag = pool
+              pool
                 .query(
                   "INSERT INTO task_tags (task_id, tag_id) VALUES ($1, $2) RETURNING *",
                   [taskData.id, taskTag.id]
                 )
-                .then((response) => console.log(response));
+                .then((response) => {
+                  return response;
+                });
             })
           );
       });
+
+      console.log({ tags });
 
       const data = {
         id: taskData.id,
         name: taskData.name,
         due_date: taskData.due_date,
+        tag_array: tags,
       };
 
       res.status(201).json({ task: data });
@@ -78,6 +83,7 @@ router.get("/", authorization, async (req, res) => {
 router.put("/update/:id", authorization, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    console.log({ id });
     const { completed } = req.body;
 
     const task = await pool.query("SELECT * FROM tasks WHERE id = $1", [id]);
